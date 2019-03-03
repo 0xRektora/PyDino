@@ -26,7 +26,7 @@ GAME = cv2.imread('data/game.png')
 
 AREA_SCAN[1], AREA_SCAN[0] = GAME.shape[:-1]
 AREA_SCAN[0] =  int(AREA_SCAN[0] * 15 / 100)
-AREA_SCAN[1] = int(AREA_SCAN[1] * 8 / 100)
+AREA_SCAN[1] = int(DINO.shape[:-1][0] * (3/2))
 
 AREA_SCAN_ADDER = int(AREA_SCAN[0] * 5 / 100)
 AREA_SCAN_MAX = int(GAME.shape[:-1][1] * 30 / 100)
@@ -66,7 +66,7 @@ startpoint = time.time()
 while True:
     start = time.time()
 
-    if  time.time()- startpoint  >= 5. and AREA_SCAN[0] < AREA_SCAN_MAX:
+    if  time.time()- startpoint  >= 10. and AREA_SCAN[0] < AREA_SCAN_MAX:
         startpoint = time.time()
         AREA_SCAN[0] += AREA_SCAN_ADDER
         
@@ -81,26 +81,16 @@ while True:
     scan_y = loc[::-1][1][0]
 
     scan = screen[scan_y : scan_y + AREA_SCAN[1], scan_x: scan_x + AREA_SCAN[0]]
-    cv2.rectangle(screen, (scan_x, scan_y), (scan_x + int(AREA_SCAN[0]), scan_y + int(AREA_SCAN[1])), (0, 0, 255), 2)
-
-    # cv2.imwrite('data/result.png', screen)
     
+    # cv2.rectangle(screen, (scan_x, scan_y), (scan_x + AREA_SCAN[0], scan_y + AREA_SCAN[1]), (0, 0, 255), 2)
+    # cv2.imwrite('data/result.png', screen)
+    # break
 
     edges = auto_canny(scan)
 
-    print(edges)
-    
-    plt.subplot(121),plt.imshow(scan,cmap = 'gray')
-    plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-    plt.subplot(122),plt.imshow(edges,cmap = 'gray')
-    plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
-
-    plt.show()
-
-    break
-
-    if  np.any(edges > 0):
+    if  np.any(edges[int(edges.shape[0]/4):int(edges.shape[0]/(3/2)) , int(edges.shape[1]/4):int(edges.shape[1]/(3/2)) ] > 0):
         pyautogui.press('space')
         print("[+] Object detected")
-        print("[+] Process in,", time.time() - start)
+
+    print("[+] Process in,", time.time() - start)
 
